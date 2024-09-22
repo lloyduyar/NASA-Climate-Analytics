@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/chart.umd.min.js"></script>
+    <title>CSV PROJECT</title>
+  </head>
+  <body>
+    <h1 style="text-align: center">CSV DATA</h1>
+    <canvas id="chart" width="500" height="500"></canvas>
+    <script>
+      const xLabels = [];
+      const yTemps = [];
+      createChart();
+      async function createChart() {
+        const ctx = document.getElementById("chart");
+        await getData();
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: xLabels,
+            datasets: [
+              {
+                label:
+                  "The GISS Surface Temperature Analysis. (0 is the Mean Average Of Land Air and Sea Temperature. This graph shows the deviance from that average.) Y axis is in Celsius",
+                data: yTemps,
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+
+      let display = document.getElementById("display");
+      let log = console.log;
+      async function getData() {
+        const response = await fetch("ZonAnn.Ts+dSST.csv");
+        const data = await response.text();
+        //log(data);
+
+        const rows = data.split(/\n/).slice(1);
+        rows.forEach((val, index, arr) => {
+          const row = val.split(",");
+          const year = row[0];
+          const temp = row[1];
+          xLabels.push(year);
+          yTemps.push(parseFloat(temp));
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/chart.umd.min.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas id="chart" width="400" height="400"></canvas>
+    <script>
+      let log = console.log;
+      let csvFile = "/GLB.Ts+dSST.csv";
+      let xAxis = [];
+      let yAxis = [];
+
+      dataChart();
+      async function dataChart() {
+        await getCsv();
+        const ctx = document.getElementById("chart");
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: xAxis,
+            datasets: [
+              {
+                label: "Graph",
+                data: yAxis,
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+
+      async function getCsv() {
+        const response = await fetch(csvFile);
+        const data = await response.text();
+
+        const table = data.split(/\n/).slice(1);
+        for (let i = 0; i < table.length; i++) {
+          const row = table[i].split(",");
+          const year = row[0];
+          const temperature = row[1];
+          xAxis.push(year);
+          yAxis.push(temperature);
+        }
+      }
+    </script>
+  </body>
+</html>
